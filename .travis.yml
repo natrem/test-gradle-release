@@ -5,7 +5,8 @@ jdk:
   
 script:
   - echo 'toto'
-#  - ./gradlew --console=plain build --info
+  - ./gradlew --console=plain build --info
+  - ./gradlew --console=plain publish --info
 
 after_success:
   - echo success

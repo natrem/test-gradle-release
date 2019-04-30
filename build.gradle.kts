@@ -80,9 +80,9 @@ publishing {
             //url = uri( if (isSnapshot) snapshotsRepoUrl else releasesRepoUrl)
 			url = uri(snapshotsRepoUrl)
             credentials {
-			    //defined in travis project settings
-                username = "$OSSRH_JIRA_USERNAME"
-                password = "$OSSRH_JIRA_PASSWORD"
+			    //defined in travis project settings or in $HOME/.gradle/gradle.properties
+                username = hasProperty('OSSRH_JIRA_USERNAME') ? OSSRH_JIRA_USERNAME : System.getenv('OSSRH_JIRA_USERNAME')
+                password = hasProperty('OSSRH_JIRA_PASSWORD') ? OSSRH_JIRA_PASSWORD : System.getenv('OSSRH_JIRA_PASSWORD')
             }
         }
     }
