@@ -12,6 +12,11 @@ plugins {
 
     // Apply the application plugin to add support for building an application
     application
+
+    `maven-publish`
+    signing
+    //com.github.ngyewch.git-version
+    //`com.palantir.git-version`
 }
 
 application {
@@ -33,4 +38,57 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    
 }
+
+tasks.register<Jar>("sourcesJar") {
+    from(sourceSets.main.get().allJava)
+    archiveClassifier.set("sources")
+}
+
+tasks.register<Jar>("javadocJar") {
+    from(tasks.javadoc)
+    archiveClassifier.set("javadoc")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            groupId = "io.github.natrem"
+            artifactId = "test-gradle-release"
+            version = "0.1-SNAPSHOT"
+
+            from(components["java"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
+ 
+/*             versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }*/
+        }
+    }
+    repositories {
+        maven {
+            val releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            val snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            val isSnapshot = version.toString().endsWith("SNAPSHOT")
+            //url = uri( if (isSnapshot) snapshotsRepoUrl else releasesRepoUrl)
+			url = uri(snapshotsRepoUrl)
+            credentials {
+			    //defined in travis project settings
+                username = "$OSSRH_JIRA_USERNAME"
+                password = "$OSSRH_JIRA_PASSWORD"
+            }
+        }
+    }
+}
+
+//signing {
+//    sign(publishing.publications["mavenJava"])
+//}
+
